@@ -32,26 +32,28 @@ public class Hilis {
         // When you create a HBaseConfiguration, it reads in whatever you've set
         // into your hbase-site.xml and in hbase-default.xml, as long as these
         // can be found on the CLASSPATH
-        System.setProperty("hadoop.home.dir", "D:\\download\\programmazione\\hbase\\hadoop-2.6.0");
         Configuration config = HBaseConfiguration.create();
 
-        BasicConfigurator.configure();
         Connection connection = null;
         try {
             logger.info("connessione");
             connection = ConnectionFactory.createConnection(config);
-            logger.info("inserimento dati");
+            logger.info("inserimento dati:inizio preparazione");
             Trend t = new Trend(connection);
             t.setName("trend");
             HashMap<Integer, Double> dati = new HashMap<>();
-            dati.put(1, 10.0);
-
+            Date tempo= new Date();
+            for(int i=0;i<1000;i++){
+                dati.put(i, Math.random()*i);
+            }
+            logger.info("Fine preparazione: " + Long.toString(new Date().getTime() - tempo.getTime()));
+            tempo=new Date();
             try {
-                t.log(new Date(), new Date(), dati);
+                t.log(new TrendRow(new Date(), new Date(), dati));
             } catch (IOException ex) {
                 logger.log(Level.SEVERE, null, ex);
             }
-
+        logger.info("Fine inserimento: " + Long.toString(new Date().getTime() - tempo.getTime()));
         } catch (IOException ex) {
             logger.log(Level.SEVERE, null, ex);
         } finally {

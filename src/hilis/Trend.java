@@ -10,14 +10,15 @@ package hilis;
  * @author pier
  */
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
+import java.util.NavigableMap;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -43,26 +44,52 @@ public class Trend {
     }
 
     /**
-     *
-     * @param dataUtc
-     * @param data
-     * @param ingressi
+     * 
+     * @param riga
+     * @throws IOException 
      */
-    public void log(Date dataUtc, Date data, Map<Integer, Double> ingressi) throws IOException {
+    public void log(TrendRow riga) throws IOException {
         Table table = this.connection.getTable(TableName.valueOf(this.name));
-        Put datiDaInserire = new Put(new SimpleDateFormat("yyyyMMddHHmmss").format(data).getBytes());
+        riga.setKey(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(riga.getDataUtc()));
+        Put datiDaInserire = new Put(riga.getKey().getBytes());
         try {
-            for (Map.Entry<Integer, Double> riga : ingressi.entrySet()) {
-                datiDaInserire.add(Bytes.toBytes("dati"),
-                        Bytes.toBytes(String.format("%07d", riga.getKey())),
-                        Bytes.toBytes(riga.getValue()));
+            for (Map.Entry<Integer, Double> rigaDati : riga.getIngressi().entrySet()) {
+                datiDaInserire.add(Bytes.toBytes("ingressi"),
+                        Bytes.toBytes(String.format("%07d", rigaDati.getKey())),
+                        Bytes.toBytes(rigaDati.getValue().toString()));
 
             }
+            datiDaInserire.add(Bytes.toBytes("dataCampionamento"),
+                    Bytes.toBytes("data"), 
+                    Bytes.toBytes(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(riga.getData())));
+            datiDaInserire.add(Bytes.toBytes("dataCampionamento"),
+                    Bytes.toBytes("dataUtc"), 
+                    Bytes.toBytes(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(riga.getDataUtc())));
+
             table.put(datiDaInserire);
         } catch (IOException e) {
             throw e;
         } finally {
             table.close();
         }
+    }
+    public TrendRow getRow(String key) throws IOException, ParseException{
+        TrendRow riga;
+        Result r;
+        byte [] valori;
+        NavigableMap<byte[], byte[]> mappa;
+        riga = new TrendRow();
+        Table table = this.connection.getTable(TableName.valueOf(this.name));
+        r=table.get(new Get(Bytes.toBytes(key)));
+        valori = r.getValue(Bytes.toBytes("dataCampionamento"),Bytes.toBytes("data"));
+        riga.setData(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(Bytes.toString(valori))); //bytes -> stringa -> data
+        valori = r.getValue(Bytes.toBytes("dataCampionamento"),Bytes.toBytes("dataUtc"));
+        riga.setDataUtc(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(Bytes.toString(valori))); //bytes -> stringa -> data
+        mappa=r.getFamilyMap(Bytes.toBytes("ingressi"));
+        for (Map.Entry<byte[], byte[]> ingresso : mappa.entrySet()) {
+            riga.setIngresso(Bytes.toInt(ingresso.getKey()), Bytes.toDouble(ingresso.getValue()));
+        }
+        return riga;
+        
     }
 }
