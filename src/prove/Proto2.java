@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tests;
+package prove;
 
 import hilis.Trend;
 import hilis.TrendRow;
@@ -21,9 +21,9 @@ import org.apache.hadoop.hbase.client.ConnectionFactory;
  *
  * @author pier
  */
-public class Test2 {
+public class Proto2 {
 
-    static Logger logger = Logger.getLogger(Test2.class.getName());
+    static Logger logger = Logger.getLogger(Proto2.class.getName());
 
     /**
      * @param args the command line arguments
@@ -61,7 +61,7 @@ public class Test2 {
                 try {
                     connection.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(Test2.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Proto2.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tests;
+package prove;
 
 /**
  *
@@ -28,7 +28,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 // Class that has nothing but a main.
 // Does a Put, Get and a Scan against an hbase table.
 // The API described here is since HBase 1.0.
-public class TestClass {
+public class Proto1 {
   public static void main(String[] args) throws IOException {
     // You need a configuration object to tell the client where to connect.
     // When you create a HBaseConfiguration, it reads in whatever you've set

@@ -62,8 +62,11 @@ public class TrendRow {
         this.data = dataCampionamento;
     }
 
-    public void setDataUtc(Date dataUtc) {
-        this.dataUtc = dataUtc;
+    public void setDataUtc(Date dataUtc) throws Exception {
+        if (dataUtc != null)
+            this.dataUtc = dataUtc;
+        else
+            throw new Exception("La data non può essere nulla");
     }
 
     public String getKey() {

@@ -73,7 +73,7 @@ public class Trend {
             table.close();
         }
     }
-    public TrendRow getRow(String key) throws IOException, ParseException{
+    public TrendRow getRow(String key) throws IOException, ParseException,Exception{
         TrendRow riga;
         Result r;
         byte [] valori;
@@ -84,11 +84,13 @@ public class Trend {
         valori = r.getValue(Bytes.toBytes("dataCampionamento"),Bytes.toBytes("data"));
         riga.setData(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(Bytes.toString(valori))); //bytes -> stringa -> data
         valori = r.getValue(Bytes.toBytes("dataCampionamento"),Bytes.toBytes("dataUtc"));
-        riga.setDataUtc(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(Bytes.toString(valori))); //bytes -> stringa -> data
+        riga.setDataUtc(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(Bytes.toString(valori)));
+        //bytes -> stringa -> data
         mappa=r.getFamilyMap(Bytes.toBytes("ingressi"));
         for (Map.Entry<byte[], byte[]> ingresso : mappa.entrySet()) {
-            riga.setIngresso(Bytes.toInt(ingresso.getKey()), Bytes.toDouble(ingresso.getValue()));
+            riga.setIngresso(Integer.parseInt(Bytes.toString(ingresso.getKey())), Bytes.toDouble(ingresso.getValue()));
         }
+        riga.setKey(key);
         return riga;
         
     }
