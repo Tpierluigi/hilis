@@ -5,14 +5,20 @@
  */
 package hilis;
 
+import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author pier
  */
-class TrendRow {
+public class TrendRow {
     String key;
     Date data;
     Date dataUtc;
@@ -30,12 +36,26 @@ class TrendRow {
         this.dataUtc = dataUtc;
         this.ingressi = ingressi;
     }
+     public TrendRow(Map<Integer, Double> ingressi){
+        this.key = "";
+        this.data = new Date();
+        try {
+            this.dataUtc = Utility.GetUTCdatetimeAsDate();
+        } catch (ParseException ex) {
+            Logger.getLogger(TrendRow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.ingressi = ingressi;
+     }
        
     public void setKey(String key) {
         this.key = key;
     }
 
     public TrendRow() {
+        key="";
+        data=null;
+        dataUtc=null;
+        ingressi=new HashMap<>();
     }
 
     public void setData(Date dataCampionamento) {
